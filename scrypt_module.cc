@@ -2,6 +2,7 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include "scrypt.h"
+#include <cstring>
 
 using namespace v8;
 
@@ -25,12 +26,12 @@ Handle<Value> Method(const Arguments& args) {
   char* input = new char[in_size];
   node::Buffer *buff = node::Buffer::New(out_size);
 
-  ::memset(input, 0, in_size*sizeof(*input));
+  std::memset(input, 0, in_size*sizeof(*input));
   if (data_len > in_size) { data_len = in_size*sizeof(*input); }
-  ::memcpy(input, data, data_len);
+  std::memcpy(input, data, data_len);
 
   ::scrypt_1024_1_1_256(input, node::Buffer::Data(buff));
-  ::free(&input);
+  std::free(&input);
 
   v8::Local<v8::Object> globalObj = v8::Context::GetCurrent()->Global();
   v8::Local<v8::Function> bufferConstructor = v8::Local<v8::Function>::Cast(globalObj->Get(v8::String::New("Buffer")));
